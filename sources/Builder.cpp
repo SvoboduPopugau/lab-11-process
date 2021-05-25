@@ -65,7 +65,6 @@ void Builder::Start() {
       });
     }
     continueProc.wait();
-
   } catch (std::exception& e) {
     BOOST_LOG_TRIVIAL(error) << "Error in processing: " << e.what();
   }
