@@ -8,6 +8,7 @@
 #define INCLUDE_BUILDER_HPP_
 
 #include <boost/program_options.hpp>
+#include <string>
 #include "Attributes.hpp"
 class Builder {
  public:

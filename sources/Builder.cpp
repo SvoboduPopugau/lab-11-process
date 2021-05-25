@@ -1,27 +1,26 @@
 //
 // Created by vladislav on 24.05.2021.
 //
+// Copyright 2020 Your Name <your_email>
 
 #include "Builder.hpp"
-Builder::~Builder() {
-  delete _process;
-}
+Builder::~Builder() { delete _process; }
 
 Builder::Builder(boost::program_options::variables_map& mp) {
   bool install = false, package = false;
   size_t time = 0;
   std::string config{"Debug"};
 
-  if(mp.count("config")){
+  if (mp.count("config")) {
     config = mp["config"].as<std::string>();
   }
-  if(mp.count("install")){
+  if (mp.count("install")) {
     install = true;
   }
-  if (mp.count("package")){
+  if (mp.count("package")) {
     package = true;
   }
-  if (mp.count("timeout")){
+  if (mp.count("timeout")) {
     time = mp["timeout"].as<size_t>();
   }
   _process = new Process(config, install, package, time);
@@ -87,22 +86,22 @@ void Builder::TerminateProcess(MyChild& childProcess) {
   }
 }
 bool Builder::RunProcess(const std::string& attribute, MyChild& myChild) {
-  if(myChild.terminated){
+  if (myChild.terminated) {
     return false;
   }
   boost::process::ipstream stream;
   auto cmakePath = boost::process::search_path("cmake");
   BOOST_LOG_TRIVIAL(info) << "Found cmake: " << cmakePath.string();
-  boost::process::child child(
-      std::string(cmakePath.string() + " " + _process->get_commandline(attribute)),
-      boost::process::std_out > stream);
+  boost::process::child child(std::string(cmakePath.string() + " " +
+                                          _process->get_commandline(attribute)),
+                              boost::process::std_out > stream);
   myChild.set_terminted(false);
   myChild.set_child(std::move(child));
 
   myChild.current_child.wait();
   auto ec = myChild.current_child.exit_code();
 
-  if (ec != 0){
+  if (ec != 0) {
     BOOST_LOG_TRIVIAL(error) << "Non zero exit code. Exiting...";
     myChild.set_terminted(true);
     return false;

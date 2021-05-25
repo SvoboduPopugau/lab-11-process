@@ -1,12 +1,13 @@
 // Copyright 2020 Your Name <your_email>
 
-#ifndef INCLUDE_ATTRIBUTES_H_
-#define INCLUDE_ATTRIBUTES_H_
+#ifndef INCLUDE_ATTRIBUTES_HPP_
+#define INCLUDE_ATTRIBUTES_HPP_
 
 #include <atomic>
 #include <string>
 #include <boost/process.hpp>
 #include <boost/log/trivial.hpp>
+#include <utility>
 struct MyChild {
   MyChild(bool tmp, boost::process::child&& other_child) {
     terminated.store(tmp);
@@ -28,7 +29,7 @@ class Process {
   const std::string INSTALL_TARGET = "_install";
 
   explicit Process(std::string& config, bool install, bool package, size_t time)
-      : _config(config), _install(install), _package(package), _time(time){};
+      : _config(config), _install(install), _package(package), _time(time){}
   ~Process() = default;
 
   std::string get_config() { return _config; }
@@ -56,4 +57,4 @@ class Process {
   size_t _time;
 };
 
-#endif  // INCLUDE_ATTRIBUTES_H_
+#endif  // INCLUDE_ATTRIBUTES_HPP_
