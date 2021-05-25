@@ -30,8 +30,8 @@ Builder::Builder(boost::program_options::variables_map& mp) {
 void Builder::Start() {
   MyChild myChild{false, boost::process::child()};
 
-  if (_process->get_time() != 0){
-    std::thread timerThread([this, &myChild]{
+  if (_process->get_time() != 0) {
+    std::thread timerThread([this, &myChild] {
       std::this_thread::sleep_for(std::chrono::seconds(_process->get_time()));
       TerminateProcess(myChild);
     });
@@ -40,26 +40,27 @@ void Builder::Start() {
 
   try {
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    std::shared_future<bool> continueProc = std::async([this, &myChild]() ->bool {
-      return this->RunProcess("config", myChild);
-    });
+    std::shared_future<bool> continueProc =
+        std::async([this, &myChild]() -> bool {
+          return this->RunProcess("config", myChild);
+        });
 
     continueProc.wait();
-    if (continueProc.get()){
+    if (continueProc.get()) {
       continueProc = std::async([this, &myChild]() -> bool {
         return this->RunProcess("build", myChild);
       });
     }
 
     continueProc.wait();
-    if (continueProc.get() && _process->get_install()){
+    if (continueProc.get() && _process->get_install()) {
       continueProc = std::async([this, &myChild]() -> bool {
         return this->RunProcess("install", myChild);
       });
     }
 
     continueProc.wait();
-    if (continueProc.get() && _process->get_package()){
+    if (continueProc.get() && _process->get_package()) {
       continueProc = std::async([this, &myChild]() -> bool {
         return this->RunProcess("package", myChild);
       });
@@ -101,7 +102,7 @@ bool Builder::RunProcess(const std::string& attribute, MyChild& myChild) {
   myChild.current_child.wait();
   auto ec = myChild.current_child.exit_code();
 
-  if (!ec){
+  if (ec != 0){
     BOOST_LOG_TRIVIAL(error) << "Non zero exit code. Exiting...";
     myChild.set_terminted(true);
     return false;

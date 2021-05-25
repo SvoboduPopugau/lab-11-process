@@ -37,13 +37,16 @@ class Process {
   [[nodiscard]] size_t get_time() const { return _time; }
 
   std::string get_commandline(const std::string& attribute) {
+    std::string return_str{};
     if (attribute == "config") {
-      return (" -B" + BUILD_TARGET + " -DCMAKE_INSTALL_PREFIX=" +
-              INSTALL_TARGET + " -DCMAKE_BUILD_TYPE=" + attribute);
+      return_str = (" -H. -B" + BUILD_TARGET + " -DCMAKE_INSTALL_PREFIX=" +
+              INSTALL_TARGET + " -DCMAKE_BUILD_TYPE=" + _config);
     } else {
-      return ("--build " + BUILD_TARGET +
-                          attribute == "build" ? "" : (" --target " + attribute));
+      return_str = ("--build " + BUILD_TARGET +
+          (attribute == "build" ? "" : (" --target " + attribute)));
     }
+    BOOST_LOG_TRIVIAL(debug) << return_str;
+    return return_str;
   }
 
  private:
